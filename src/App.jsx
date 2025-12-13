@@ -1,6 +1,8 @@
-import { useState } from "react";
+// Status
+import { useState, useEffect } from "react";
 
 const languages = [
+  // Idiomas com seus códigos
   { code: 'en', name: "Inglês"},
   { code: 'es', name: "Espanhol"},
   { code: 'fr', name: "Francês"},
@@ -11,9 +13,67 @@ const languages = [
   { code: 'et', name: "Estoniano"},
   { code: 'ko', name: "Coreano"},
   { code: 'ja', name: "Japonês"},
+
 ]
 
-function App() {
+function App() {  
+  // Variável para guardar o valor e uma função para armazenar o valor
+  const [sourceLang, setSourceLang] = useState('pt');
+  const [targetLang, setTargetLang] = useState('en');
+  const [sourceText, setSourceText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [translatedText, setTranslatedText] = useState('');
+  const [error, setError] = useState('');
+
+  // Efeito colateral
+  useEffect( () => {
+
+    // Língua de origem = sourceLang
+    // Língua que será traduzido = targetLang
+    // Texto para tradução = sourceText
+
+    if(sourceText.trim()) {
+      const delay = setTimeout(() => {
+        handleTranslate()
+      }, 300);
+
+    return () => clearTimeout(delay)
+  }
+
+  }, [sourceText, targetLang, sourceLang])
+
+  const handleTranslate = async () => {
+    setIsLoading(true)
+    setError('')
+
+    try{
+
+    const response = await  fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(sourceText)}&langpair=${sourceLang}|${targetLang}`)
+
+    if(!response.ok){
+      throw new Error(`HTTP ERROR: ${response.status}`) // Status do erro
+    }
+
+    // Conversão para JSON
+    const data = await response.json()
+
+    setTranslatedText(data.responseData.translatedText)
+
+} catch(err) {
+  setError(`Erro ao traduzir: ${err.message}`)
+} finally{
+    setIsLoading(false)
+
+}
+  }
+
+  const swapTranslate = () => {
+    setSourceLang(targetLang)
+    setTargetLang(sourceLang)
+    setSourceText(translatedText)
+    setTranslatedText(sourceText)
+  }
+
 	return (
 		<div className="min-h-screen bg-background flex flex-col">
 
@@ -27,17 +87,21 @@ function App() {
         <div className="w-full max-w-5xl bg-white rounded-lg shadow-md overflow-hidden">
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
 
-            <select className="text-sm text-txtcolor bg-transparent border-none focus:outline-none cursor-pointer">
+            <select 
+              value={sourceLang} 
+              onChange={ event => setSourceLang(event.target.value)} 
+              className="text-sm text-txtcolor bg-transparent border-none focus:outline-none cursor-pointer">
+
               {/* Seletor para pegar automaticamente os idiomas da lista acima */}
-              { languages.map( (lang) => {
+              { languages.map( (lang) => (
                   // React saberá separar os idiomas aqui
                 <option key={lang.code} value={lang.code}>
                   {lang.name}
                 </option>
-              })}
+              ))}
             </select>
 
-            <button className="p-2 rounded-full hover:bg-gray-100 outline-none">
+            <button className="p-2 rounded-full hover:bg-gray-100 outline-none" onClick={swapTranslate}>
               <svg
                 className="w-5 h-5 text-hcolor"
                 fill="none"
@@ -54,12 +118,16 @@ function App() {
               </svg>
             </button>
 
-            <select className="text-sm text-txtcolor bg-transparent border-none focus:outline-none cursor-pointer">
-              { languages.map( (lang) => {
+            <select 
+              value={targetLang} 
+              onChange={ event => (setTargetLang(event.target.value))} 
+              className="text-sm text-txtcolor bg-transparent border-none focus:outline-none cursor-pointer">
+
+              { languages.map( (lang) => (
                 <option key={lang.code} value={lang.code}>
                   {lang.name}
                 </option>
-              })}
+              ))}
             </select>
           </div>
 
@@ -67,13 +135,45 @@ function App() {
 
             <div className="p-4">
               <textarea 
+                value={sourceText}
+                onChange={ event => setSourceText(event.target.value)}
                 placeholder="Digite aqui..."
                 className="w-full h-40 text-lg text-txtcolor bg-transparent resize-none border-none outline-none">
               </textarea>
             </div>
+            
+            <div className="p-4 relative bg-sbackground border-l border-gray-200">
+
+              {isLoading ? (
+              <div className="absolute inset-0 flex items-center justify-center">
+
+                {/* Condições: Se o isLoading for True, exibe o efeito de carregamento, senão, a mensagem */}
+        
+                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-blue-500"></div>
+                  </div>
+              ) : (
+                <p className="text-lg text-txtcolor">{translatedText}</p>
+              )}
+      
+            </div>
           </div>
+
+          {/* Permite o usuário ver na tela o erro */}
+          {error && (
+          <div className="p-4 bg-red-100 border-t border-red-400 text-red-700">
+            {error}
+          </div>
+          )}
         </div>
       </main>
+
+      <footer className="bg-white border-t border-gray-200 mt-auto">
+        <div className="max-w-5xl mx-auto px-4 py-3 text-sm text-hcolor">
+          {/* Comando para atualizar o ano automaticamente quando mudar */}
+          &copy; {new Date().getFullYear()} React Tradutor - Todos os direitos reservados
+        </div>
+      </footer>
+
 		</div>
 	);
 }
