@@ -107,6 +107,16 @@ export default {
 ```
 
 ###
+```t
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+    autoprefixer: {},
+  },
+}
+```
+
+###
 
 **<h6>pnpm code</h6>**
 
