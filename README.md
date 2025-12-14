@@ -33,3 +33,55 @@ Vite JS: [https://vitejs.dev](https://vitejs.dev).
 
 ---
 
+**<h3>Commands</h3>**
+
+###
+
+<h6>Tailwindcss</h6>
+
+###
+
+```powershell
+npm install -D tailwindcss postcss autoprefixer
+```
+
+###
+
+<h6>Node Modules</h6>
+
+###
+```powershell
+npm i || npm install
+```
+
+---
+
+**<h6>Tailwind code</h6>**
+
+###
+```t
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+###
+
+**<h6>Postcss code</h6>**
+
+###
+```t
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+```
