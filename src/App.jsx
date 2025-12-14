@@ -67,6 +67,7 @@ function App() {
 }
   }
 
+  // Ao clicar no botão central, os idiomas vão trocar de posição
   const swapTranslate = () => {
     setSourceLang(targetLang)
     setTargetLang(sourceLang)
@@ -75,6 +76,7 @@ function App() {
   }
 
 	return (
+    // Retorno da parte visual (UI)
 		<div className="min-h-screen bg-background flex flex-col">
 
       <header className="bg-white shadow-sm">
@@ -101,6 +103,7 @@ function App() {
               ))}
             </select>
 
+            {/* Botão + ícone SVG para troca de idiomas + onClick chamando a função criada para isso*/}
             <button className="p-2 rounded-full hover:bg-gray-100 outline-none" onClick={swapTranslate}>
               <svg
                 className="w-5 h-5 text-hcolor"
